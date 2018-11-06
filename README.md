@@ -21,7 +21,7 @@ This Springboot application demonstrates how to build and deploy a *Purchase Ord
 3.  A **Azure DevOps** (formerly Visual Studio Team Services) Account.  You can get a free Azure DevOps account by accessing the [Azure DevOps](https://azure.microsoft.com/en-us/services/devops/) web page.
 4.  To connect your VSTS project to your Azure subscription, you may need to define a **Service Endpoint** in VSTS.  Refer to the article [Service endpoints for builds and releases](https://docs.microsoft.com/en-us/vsts/pipelines/library/service-endpoints?view=vsts).  Review the steps for [Azure Resource Manager service endpoint](https://docs.microsoft.com/en-us/vsts/pipelines/library/service-endpoints?view=vsts#sep-servbus). 
 5.  Review [Overview of Azure Cloud Shell](https://docs.microsoft.com/en-us/azure/cloud-shell/overview).  **Azure Cloud Shell** is an interactive, browser accessible shell for managing Azure resources.  You will be using the Cloud Shell to create the Bastion Host (Linux VM).
-6.  **This project assumes readers are familiar with Linux containers (`eg., docker, containerd`), Container Platforms (`eg., Kubernetes`), DevOps (`Continuous Integration/Continuous Deployment`) concepts and developing/deploying Microservices.  As such, this project is primarily targeted at technical/solution architects who have a good understanding of some or all of these solutions/technologies.  If you are new to Linux Containers/Kubernetes and/or would like to get familiar with container solutions available on Microsoft Azure, please go thru the hands-on labs that are part of the [MTC Container Bootcamp](https://github.com/Microsoft/MTC_ContainerCamp) first.**
+6.  **This project assumes readers are familiar with Linux containers (`eg., docker, OCI runc, Clear Containers ...`), Container Platforms (`eg., Kubernetes`), DevOps (`Continuous Integration/Continuous Deployment`) concepts and developing/deploying Microservices.  As such, this project is primarily targeted at technical/solution architects who have a good understanding of some or all of these solutions/technologies.  If you are new to Linux Containers/Kubernetes and/or would like to get familiar with container solutions available on Microsoft Azure, please go thru the hands-on labs that are part of the [MTC Container Bootcamp](https://github.com/Microsoft/MTC_ContainerCamp) first.**
 
 **Workflow:**
 
@@ -85,7 +85,7 @@ Alternatively, if you prefer you can use SSH based authentication to connect to 
     #
     ```
 
-5.  Install Azure CLI, K8s CLI, Helm, Git client, Open JDK, Jenkins and Maven on this VM.  If you are a Linux power user and would like to save yourself some typing time, use this [shell script](./shell-scripts/setup-bastion.sh) to install all the pre-requisite CLI tools.
+5.  Install Azure CLI, K8s CLI, Helm CLI, Service Catalog CLI, Git client, Open JDK, Jenkins and Maven on this VM.  If you are a Linux power user and would like to save yourself some typing time, use this [shell script](./shell-scripts/setup-bastion.sh) to install all the pre-requisite CLI tools.
     ```
     # Install Azure CLI on this VM so that we can to deploy this application to the AKS cluster later in step [D].
     #
@@ -416,7 +416,7 @@ Follow the steps below to provision the AKS cluster and deploy the *po-service* 
     $ az aks show -g myResourceGroup -n akscluster --output table
     ```
 
-4.  Connect to the AKS cluster.
+4.  Connect to the AKS cluster and initialize **Helm** package manager.
     ```
     # Configure kubectl to connect to the AKS cluster
     $ az aks get-credentials --resource-group myResourceGroup --name akscluster
@@ -426,6 +426,13 @@ Follow the steps below to provision the AKS cluster and deploy the *po-service* 
     #
     # Check default namespaces in the cluster
     $ kubectl get namespaces
+    #
+    # Initialize Helm.  This will install 'Tiller' on AKS.  Wait for this command to complete!
+    $ helm init
+    #
+    # Check if Helm client is able to connect to Tiller on AKS.
+    # This command should list bothclient and server versions.
+    $ helm version
     ```
 
 5.  Next, create a new Kubernetes **namespace** resource.  This namespace will be called *development*.  
@@ -669,7 +676,9 @@ We will define a **Release Pipeline** in Azure DevOps to perform automated appli
 
 In this project, we experienced how DevOps, Microservices and Containers can be used to build next generation applications.  These three technologies are changing the way we develop and deploy software applications and are at the forefront of fueling digital transformation in enterprises today!
 
-Next, proceed to the sub-project [Jenkins CI/CD](https://github.com/ganrad/k8s-springboot-data-rest/tree/master/extensions/jenkins-ci-cd) to learn how to implement a **Continuous Delivery** pipeline in **Jenkins** to build and release the *po-service* microservice to AKS.
+Next, continue to explore other container solutions available on Azure.  Use the links below.
+- Proceed to the sub-project [Jenkins CI/CD](https://github.com/ganrad/k8s-springboot-data-rest/tree/master/extensions/jenkins-ci-cd) to learn how to implement a **Continuous Delivery** pipeline in **Jenkins** to build and release the *po-service* microservice to AKS.
+- Proceed to the sub-project [PaaS Container Solutions](https://github.com/ganrad/k8s-springboot-data-rest/tree/master/extensions/po-deploy-azuredb-mysql) to learn how to build and deploy a containerized microservice application using only **Azure PaaS**.  Learn how to refactor the *po-service* microservice to persist *Purchase Order* data in a **Azure database for MySQL** (managed) server instance.  This sub-project will also detail the steps for deploying the *po-service* microservice on **Azure Container Instances**.
 
 ### Appendix A
 In case you want to change the name of the *MySQL* database name, root password, password or username, you will need to make the following changes.  See below.
